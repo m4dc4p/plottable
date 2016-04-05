@@ -1,0 +1,163 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="plottable.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <style type="text/css">
+     svg {
+       border: 1px solid rgba(0, 0, 0, 0.15);
+       width: 100%;
+       height: 200px;
+     }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.14/d3.min.js"></script>
+    <script type="text/javascript" src="plottable.js"></script>
+    <script type="text/javascript">
+     function mkPlot(orientation, textAlign, angle, tickTextPadding) {
+       var data = [
+         { "start": 1, "end": 4, "task": "Planning" },
+         { "start": 4, "end": 5, "task": "Development" },
+         { "start": 5, "end": 7, "task": "QE" }
+       ],
+           layouts = {
+             left: function () {
+               return [[catAxis, plot]];
+             },
+             right: function () {
+               return [[plot, catAxis]];
+             },
+             top: function () {
+               return [[catAxis],
+                       [plot]];
+             },
+             bottom: function () {
+               return [[plot],
+                       [catAxis]];
+             }
+           },
+           colorScale = new Plottable.Scales.Color(),
+           numScale = new Plottable.Scales.Linear(),
+           catScale = new Plottable.Scales.Category(),
+           plot = new Plottable.Plots.Rectangle()
+                               .attr("fill", function(d) { return d.task; }, colorScale)
+                               .addDataset(new Plottable.Dataset(data)),
+           catAxis = new Plottable.Axes.Category(catScale, orientation),
+           chart = new Plottable.Components.Table(layouts[orientation]());
+
+       if(textAlign)
+         catAxis.tickTextAlignment(textAlign);
+
+       if(tickTextPadding)
+         catAxis.tickTextPadding(tickTextPadding);
+
+       if(angle)
+         catAxis.tickLabelAngle(angle);
+
+       switch(orientation) {
+         case "left":
+         case "right":
+           plot.x(function(d) { return new Date(d.start); }, numScale)
+               .x2(function(d) { return new Date(d.end); }, numScale)
+               .y(function(d) { return d.task; }, catScale);
+           break;
+         case "top":
+         case "bottom":
+           plot.y(function(d) { return new Date(d.start); }, numScale)
+               .y2(function(d) { return new Date(d.end); }, numScale)
+               .x(function(d) { return d.task; }, catScale);
+           break;
+       }
+
+       return chart;
+     }
+
+     function init() {
+       mkPlot("left", "left", null, 10).renderTo("#left-left-padded svg");
+       mkPlot("left", "left").renderTo("#left-left svg");
+
+       mkPlot("right", "right", null, 10).renderTo("#right-right-padded svg");
+       mkPlot("right", "right").renderTo("#right-right svg");
+
+       mkPlot("top", "right", -90, 10).renderTo("#top-right--90-padded svg");
+       mkPlot("top", "right", -90).renderTo("#top-right--90 svg");
+
+       mkPlot("bottom", "right", 90, 10).renderTo("#bottom-right-90-padded svg");
+       mkPlot("bottom", "right", 90).renderTo("#bottom-right-90 svg");
+     }
+
+     $(init);
+    </script>
+  </head>
+  <body>
+    <div class="container" style="padding-bottom: 10px;">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Left Orientation</h2>
+          <div class="row">
+            <div class="col-md-6 text-center" id="left-left-padded"><h6>w/ Padding</h6>
+              <svg></svg>
+            </div>
+            <div class="col-md-6 text-center" id="left-left"><h6>w/o Padding</h6>
+              <svg></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Right</h2>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-6" id="right-right-padded">
+                  <svg></svg>
+                </div>
+                <div class="col-md-6" id="right-right">
+                  <svg></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Top</h2>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-6" id="top-right--90-padded">
+                  <svg></svg>
+                </div>
+                <div class="col-md-6" id="top-right--90">
+                  <svg></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h2>Bottom</h2>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-6" id="bottom-right-90-padded">
+                  <svg></svg>
+                </div>
+                <div class="col-md-6" id="bottom-right-90">
+                  <svg></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
