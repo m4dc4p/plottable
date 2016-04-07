@@ -1,0 +1,55 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="plottable.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <style type="text/css">
+     svg {
+       border: 1px solid rgba(0, 0, 0, 0.15);
+       width: 100%;
+       height: 400px;
+     }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.14/d3.min.js"></script>
+    <script type="text/javascript" src="plottable.js"></script>
+    <script type="text/javascript">
+     function init() {
+       var data = [
+         { "start": 1, "end": 4, "task": "Planning" },
+         { "start": 4, "end": 5, "task": "Development" },
+         { "start": 5, "end": 7, "task": "QE" }
+       ],
+           colorScale = new Plottable.Scales.Color(),
+           numScale = new Plottable.Scales.Linear(),
+           catScale = new Plottable.Scales.Category(),
+           grid = new Plottable.Components.Gridlines(catScale, null),
+           plot = new Plottable.Plots.Rectangle()
+                               .y(function(d) { return new Date(d.start); }, numScale)
+                               .y2(function(d) { return new Date(d.end); }, numScale)
+                               .x(function(d) { return d.task; }, catScale)
+                               .attr("fill", function(d) { return d.task; }, colorScale)
+                               .addDataset(new Plottable.Dataset(data)),
+           catAxis = new Plottable.Axes.Category(catScale, "bottom").tickLabelAngle(-90),
+           chart = new Plottable.Components.Table([[new Plottable.Components.Group([grid, plot])],
+                                                   [catAxis]]);
+       
+       chart.renderTo("#example svg");
+     }
+
+     $(init);
+    </script>
+  </head>
+  <body>
+    <div class="container" style="padding-bottom: 10px;">
+      <div class="row">
+        <div class="col-md-12 text-center" id="example">
+          <svg ></svg>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
